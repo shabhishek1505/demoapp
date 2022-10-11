@@ -1,6 +1,9 @@
-import React, { useEffect } from "react";
-import { NavLink, useHistory } from "react-router-dom";
+import React, { useEffect, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, NavLink, useHistory } from "react-router-dom";
 import useApi from "../hooks/useApi";
+import { loadUser } from "../store/reducers/user";
+import { FaOpencart } from "react-icons/fa";
 
 function Navbar() {
 
@@ -10,6 +13,24 @@ function Navbar() {
     );
 
     const history = useHistory();
+    const dispatch = useDispatch();
+    const cart = useSelector((state) => state.cart);
+
+    const cartItems = useMemo(() => {
+        console.log({ cart });
+        let totalItems = 0;
+
+        if (Object.keys(cart).length > 0) {
+            Object.keys(cart).forEach((productId) => {
+                totalItems += cart[productId].quantity;
+            });
+        }
+        return totalItems;
+    }, [cart]);
+
+    useEffect(() => {
+        dispatch(loadUser());
+    }, [dispatch])
 
     useEffect(() => {
         if (!loading && categories?.length > 0) {
@@ -27,17 +48,23 @@ function Navbar() {
     }
     else {
         return (
-            <div className="products">
-                {categories.map((category) => (
-                    <NavLink
-                        key={`category-${category}`}
-                        className="product-category"
-                        activeClassName="product-category--selected"
-                        to={`/products/${category}`}
-                    >
-                        {category}
-                    </NavLink>
-                ))}
+            <div className="navbar">
+                <div className="products">
+                    {categories.map((category) => (
+                        <NavLink
+                            key={`category-${category}`}
+                            className="product-category"
+                            activeClassName="product-category--selected"
+                            to={`/products/${category}`}
+                        >
+                            {category}
+                        </NavLink>
+                    ))}
+                </div>
+                <Link to="/cart" className="cart-icon-container">
+                    <FaOpencart className="cart-icon" />
+                    <div className="cart-items">{cartItems}</div>
+                </Link>
             </div>
         )
 

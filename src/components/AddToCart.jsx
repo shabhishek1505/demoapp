@@ -1,17 +1,20 @@
 import React, { useCallback } from "react"
+import { useDispatch, useSelector } from "react-redux";
 import { useCartContext } from "../context/CartContext";
+import { addToCart, removeFromCart } from "../store/reducers/cart";
 
 
 function AddToCart({ product }) {
-    const { cart, addToCart, removeItem } = useCartContext();
+    const cart = useSelector(state => state.cart);
+    const dispatch = useDispatch();
 
     const handleAddToCart = useCallback(() => {
-        addToCart(product);
-    }, [addToCart, product]);
+        dispatch(addToCart(product));
+    }, [product, dispatch]);
 
     const handleRemoveFromCart = useCallback(() => {
-        removeItem(product);
-    }, [removeItem, product]);
+        dispatch(removeFromCart(product))
+    }, [product, dispatch]);
 
     if (cart[product.id]) {
         return (
